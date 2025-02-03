@@ -1,11 +1,12 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import Form from "@/components/Form";
 
-const EditPrompt = () => {
+// Wrap the main component logic in a Suspense boundary
+const EditPromptContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const promptId = searchParams.get("id");
@@ -37,7 +38,7 @@ const EditPrompt = () => {
     if (!promptId) return alert("Prompt ID not found");
 
     try {
-      const response = await fetch(`api/prompt/${promptId}`, {
+      const response = await fetch(`/api/prompt/${promptId}`, {
         method: "PATCH",
         body: JSON.stringify({
           prompt: post.prompt,
@@ -56,14 +57,21 @@ const EditPrompt = () => {
   };
 
   return (
-    <Suspense>
-      <Form
-        type="Edit"
-        post={post}
-        setPost={setPost}
-        submitting={submitting}
-        handleSubmit={updatePrompt}
-      />
+    <Form
+      type="Edit"
+      post={post}
+      setPost={setPost}
+      submitting={submitting}
+      handleSubmit={updatePrompt}
+    />
+  );
+};
+
+// Main component with Suspense boundary
+const EditPrompt = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EditPromptContent />
     </Suspense>
   );
 };
